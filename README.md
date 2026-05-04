@@ -57,6 +57,18 @@ python -m unittest balance/test_balance_observer.py
 6. Choose and Implement a Fourth Pattern – Pick one additional design pattern (e.g., Strategy, Command, Decorator, etc.) and integrate it into your project.
 7. Provide a Reflection – Add a short write-up in your repo (README or separate file) explaining your design choices.
 
+## Design Pattern Reflection
+
+This implementation uses four object-oriented design patterns to keep the finance manager small, testable, and easy to extend.
+
+The `Balance` class uses the Singleton pattern so all parts of the application share one source of truth for the current balance. This fits the project because a personal finance manager should not accidentally maintain competing balances. The trade-off is that singleton state must be reset carefully in tests.
+
+The `TransactionAdapter` uses the Adapter pattern to convert `ExternalFreelanceIncome` objects into standard `Transaction` objects. This keeps third-party data shape separate from the internal transaction model, making it easier to support more external income sources later without changing balance logic.
+
+The balance observers use the Observer pattern. `PrintObserver` reports each balance update, while `LowBalanceAlertObserver` watches for threshold crossings and alerts when the balance becomes too low. This keeps notification behavior outside the `Balance` class, though it means tests need to verify both state changes and notification side effects.
+
+The fourth pattern is Command. `TransactionCommand` wraps applying and undoing one transaction, and `TransactionCommandManager` keeps a small history of executed commands. This makes undo behavior explicit and testable. The current version intentionally keeps the command history in memory only; persistence and redo support would be natural future extensions.
+
 ## Built With
 
 * [Python](https://www.python.org/) – Main programming language
